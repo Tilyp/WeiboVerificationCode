@@ -17,57 +17,58 @@ ims和images的区别是数据结构不一样， ims是由二维数组构成， 
 
 以下是计算相似度的代码：
 
-def getType_similirity(browser):
 
-    """ 识别图形路径 ，采用欧氏距离计算相似度"""
+    def getType_similirity(browser):
 
-    time.sleep(3.5)
+        """ 识别图形路径 ，采用欧氏距离计算相似度"""
 
-    im0 = Image.open(StringIO.StringIO(browser.get_screenshot_as_png()))
+        time.sleep(3.5)
 
-    box = browser.find_element_by_id('patternCaptchaHolder')
+        im0 = Image.open(StringIO.StringIO(browser.get_screenshot_as_png()))
 
-    im0 = im0.resize((1034, 708))
+        box = browser.find_element_by_id('patternCaptchaHolder')
 
-    im = im0.crop((int(box.location['x']) + 10, int(box.location['y']) + 100,
-                   int(box.location['x']) + box.size['width'] - 10,
-                   int(box.location['y']) + box.size['height'] - 10)).convert('L')
+        im0 = im0.resize((1034, 708))
 
-    newBox = getExactly(im)
+        im = im0.crop((int(box.location['x']) + 10, int(box.location['y']) + 100,
+                       int(box.location['x']) + box.size['width'] - 10,
+                       int(box.location['y']) + box.size['height'] - 10)).convert('L')
 
-    im = im.crop(newBox)
+        newBox = getExactly(im)
 
-    data = list(im.getdata())
+        im = im.crop(newBox)
 
-    data_vec = np.array(data)
+        data = list(im.getdata())
 
-    vectDict = {}
+        data_vec = np.array(data)
 
-    for i, j in images.items():
+        vectDict = {}
 
-        vect = euclidean_distances(data_vec, j)
+        for i, j in images.items():
 
-        vectDict[i] = vect[0][0]
+            vect = euclidean_distances(data_vec, j)
 
-    """对欧氏距离计算结果排序，取最小值"""
+            vectDict[i] = vect[0][0]
 
-    sortDict = sorted(vectDict.iteritems(), key=lambda d: d[1], reverse=True)
+        """对欧氏距离计算结果排序，取最小值"""
 
-    ttype = sortDict[-1][0]
+        sortDict = sorted(vectDict.iteritems(), key=lambda d: d[1], reverse=True)
 
-    px0_x = box.location['x'] + 40 + newBox[0]
+        ttype = sortDict[-1][0]
 
-    px1_y = box.location['y'] + 130 + newBox[1]
+        px0_x = box.location['x'] + 40 + newBox[0]
 
-    PIXELS.append((px0_x, px1_y))
+        px1_y = box.location['y'] + 130 + newBox[1]
 
-    PIXELS.append((px0_x + 100, px1_y))
+        PIXELS.append((px0_x, px1_y))
 
-    PIXELS.append((px0_x, px1_y + 100))
+        PIXELS.append((px0_x + 100, px1_y))
 
-    PIXELS.append((px0_x + 100, px1_y + 100))
+        PIXELS.append((px0_x, px1_y + 100))
 
-    return ttype
+        PIXELS.append((px0_x + 100, px1_y + 100))
+
+        return ttype
 
 
 经过几十次的测试，成功率为百分之百，好了，废话不多说， 有什么问题加QQ群聊（526855734）
