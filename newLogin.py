@@ -79,12 +79,22 @@ def draw(browser, ttype):
     else:
         print 'Sorry! Failed! Maybe you need to update the code.'
 
+def show_img(im, title):
+    import pylab as pl
+    pl.gray()
+    pl.matshow(im)
+    pl.title(title)
+    pl.show()
+
 def getType_similirity(browser):
 
     """ 识别图形路径 ，采用欧氏距离计算相似度"""
 
     time.sleep(3.5)
     im0 = Image.open(StringIO.StringIO(browser.get_screenshot_as_png()))
+    # print im0.size
+    # 更改因为系统设置不同而造成的不兼容
+    im0 = im0.resize((1034, 708))
     box = browser.find_element_by_id('patternCaptchaHolder')
     im = im0.crop((int(box.location['x']) + 10, int(box.location['y']) + 100,
                    int(box.location['x']) + box.size['width'] - 10,
